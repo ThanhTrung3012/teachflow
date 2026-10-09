@@ -41,6 +41,7 @@ export function render(root, { refresh }) {
     <div class="stat-grid">
       <div class="stat"><span>Lớp đang dạy</span><b>${activeClasses}</b></div>
       <div class="stat"><span>Tổng giờ công</span><b>${fmtHours(sum.hours)}<small> giờ</small></b></div>
+      <div class="stat"><span>Số giờ đã dạy</span><b>${fmtHours(sum.doneHours)}<small> giờ</small></b><em>Trong tháng ${esc(fmtMonth(ym))}</em></div>
       <div class="stat"><span>Tổng số buổi dạy</span><b>${sum.sessions}</b><em>${sum.cancelled ? `${sum.cancelled} buổi nghỉ không tính` : 'Chưa có buổi nghỉ'}</em></div>
       <div class="stat"><span>Ca Trial</span><b>${sum.byType.trial.sessions}</b></div>
       <div class="stat"><span>Buổi dạy bù</span><b>${sum.byType.makeup.sessions}</b></div>
@@ -55,6 +56,7 @@ export function render(root, { refresh }) {
         <h2>Giờ công theo loại</h2>
         ${rows}
         <div class="total-line"><span>Tổng cộng</span><b>${fmtHours(sum.hours)} giờ · ${money(sum.amount)}</b></div>
+        <div class="total-line"><span>Số giờ đã dạy trong tháng</span><b>${fmtHours(sum.doneHours)} giờ</b></div>
         <a class="link" href="#/results">Xem Bảng kết quả chi tiết →</a>
       </section>
       <section class="card">
