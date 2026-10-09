@@ -1,0 +1,11 @@
+{
+  "name": "teachflow",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Website quản lý lịch dạy, giờ công và lương cho giáo viên",
+  "scripts": {
+    "test": "node tests/logic.test.mjs",
+    "start": "npx serve . -l 5173"
+  }
+}

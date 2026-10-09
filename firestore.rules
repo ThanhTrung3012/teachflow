@@ -1,0 +1,19 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Mỗi người dùng chỉ đọc/ghi dữ liệu có userId trùng với uid đăng nhập.
+    function signedIn() { return request.auth != null; }
+    function owns()     { return signedIn() && resource.data.userId == request.auth.uid; }
+    function ownsNew()  { return signedIn() && request.resource.data.userId == request.auth.uid; }
+
+    match /users/{uid} {
+      allow read, write: if signedIn() && request.auth.uid == uid;
+    }
+
+    match /classes/{id}            { allow read, delete: if owns(); allow create: if ownsNew(); allow update: if owns() && ownsNew(); }
+    match /sessions/{id}           { allow read, delete: if owns(); allow create: if ownsNew(); allow update: if owns() && ownsNew(); }
+    match /personal_schedules/{id} { allow read, delete: if owns(); allow create: if ownsNew(); allow update: if owns() && ownsNew(); }
+    match /salary_months/{id}      { allow read, delete: if owns(); allow create: if ownsNew(); allow update: if owns() && ownsNew(); }
+  }
+}
