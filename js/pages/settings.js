@@ -23,6 +23,14 @@ export function render(root, { onSignOut }) {
         <p class="hint">Đơn giá gợi ý chỉ điền sẵn vào form. Mỗi buổi vẫn giữ đơn giá riêng của nó.</p>
       </section>
       <section class="card">
+        <h2>Cài TeachFlow lên điện thoại</h2>
+        <p class="hint">Thêm TeachFlow vào màn hình chính để mở như một ứng dụng. Cần truy cập website qua HTTPS.</p>
+        <div class="btn-row wrap" style="margin:12px 0">
+          <button class="btn btn-primary" id="install-app" type="button">Cài ứng dụng</button>
+        </div>
+        <p id="install-help" class="hint" aria-live="polite">Android: bấm “Cài ứng dụng” hoặc chọn “Cài đặt ứng dụng” trong menu trình duyệt. iPhone/iPad: mở bằng Safari, bấm nút Chia sẻ rồi chọn “Thêm vào MH chính”.</p>
+      </section>
+      <section class="card">
         <h2>Tài khoản</h2>
         <div class="info-grid one"><div><span>Email</span><b>${esc(u.email)}</b></div><div><span>Nơi lưu dữ liệu</span><b>${local ? 'Trình duyệt này (thử nghiệm)' : 'Firebase Firestore'}</b></div></div>
         <div class="btn-row wrap" style="margin-top:14px">
@@ -43,6 +51,22 @@ export function render(root, { onSignOut }) {
       toast('Đã lưu cài đặt.');
     } catch (ex) { toast(store.friendlyError(ex), 'err'); }
   });
+  const installButton = root.querySelector('#install-app');
+  const installHelp = root.querySelector('#install-help');
+  const updateInstallState = () => {
+    const available = Boolean(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone);
+    installButton.textContent = available ? 'Đã cài trên thiết bị này' : 'Cài ứng dụng';
+    installButton.disabled = available;
+  };
+  installButton.onclick = () => {
+    window.dispatchEvent(new Event('teachflow-install'));
+    if (!window.matchMedia('(display-mode: standalone)').matches && !window.navigator.standalone) {
+      installHelp.textContent = 'Nếu không thấy hộp thoại cài đặt, hãy mở menu trình duyệt và chọn “Thêm vào màn hình chính” hoặc “Cài đặt ứng dụng”. Trên iPhone/iPad, dùng Safari → Chia sẻ → Thêm vào MH chính.';
+    }
+  };
+  window.addEventListener('teachflow-install-ready', updateInstallState);
+  window.addEventListener('teachflow-installed', updateInstallState);
+  updateInstallState();
   root.querySelector('#backup').onclick = () => downloadFile(`teachflow-backup-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(store.exportAll(), null, 2), 'application/json');
   root.querySelector('#logout').onclick = onSignOut;
 }

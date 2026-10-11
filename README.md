@@ -26,6 +26,10 @@ dữ liệu lưu trong trình duyệt (localStorage), dùng để làm quen trư
 
 Deploy: Firebase Hosting (`firebase init hosting` → thư mục public là `.`), Netlify, GitHub Pages… đều được.
 
+### Cài trên điện thoại
+
+TeachFlow hỗ trợ cài như ứng dụng PWA. Deploy website qua **HTTPS**, mở bằng Chrome/Edge trên Android rồi bấm **Cài ứng dụng** trong trang Cài đặt (hoặc chọn cài đặt từ menu trình duyệt). Trên iPhone/iPad, mở liên kết bằng **Safari** → **Chia sẻ** → **Thêm vào MH chính**. Service worker lưu bộ khung trang để mở lại khi mất mạng; đăng nhập và đồng bộ dữ liệu vẫn cần mạng.
+
 ## 3. Cấu trúc code
 
 ```

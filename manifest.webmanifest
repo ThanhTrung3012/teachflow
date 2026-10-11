@@ -1,0 +1,16 @@
+{
+  "id": ".",
+  "name": "TeachFlow — Quản lý lịch dạy & lương",
+  "short_name": "TeachFlow",
+  "description": "Quản lý lịch dạy, giờ công và lương giáo viên.",
+  "lang": "vi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f4f7fb",
+  "theme_color": "#2563eb",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
