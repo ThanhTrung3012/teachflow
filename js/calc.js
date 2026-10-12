@@ -3,7 +3,7 @@ import { round2, round8, norm } from './util.js';
 
 export const TYPE_LABEL = { main: 'Lớp chính', trial: 'Trial', makeup: 'Dạy bù', personal: 'Lịch cá nhân' };
 export const STATUS_LABEL = { scheduled: 'Dự kiến', done: 'Đã dạy', cancelled: 'Nghỉ' };
-export const CLASS_STATUS_LABEL = { active: 'Đang dạy', ended: 'Đã kết thúc', paused: 'Tạm dừng' };
+export const CLASS_STATUS_LABEL = { active: 'Đang dạy', ended: 'Hoàn thành', paused: 'Tạm dừng' };
 export const CLASS_TYPE_LABEL = { group: 'Nhóm', one: '1-1' };
 
 /** Thành tiền = số giờ × đơn giá của CHÍNH buổi đó (làm tròn đến đồng). */

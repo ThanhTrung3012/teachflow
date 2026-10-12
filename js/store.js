@@ -179,7 +179,19 @@ async function commitClassPlan(cls, before, after, endDate, writeClass) {
   const ops = [];
   for (const s of changed) ops.push({ type: 'set', col: 'sessions', id: s.id, data: finalizeSession(s) });
   for (const s of removed) ops.push({ type: 'delete', col: 'sessions', id: s.id });
-  if (writeClass || endDate !== cls.endDate) ops.push({ type: 'set', col: 'classes', id: cls.id, data: { ...cls, endDate } });
+  const activeLessons = after.filter((s) => s.status !== 'cancelled');
+  const completed = activeLessons.length === 14 && activeLessons.every((s) => s.status === 'done');
+  const classData = { ...cls, endDate };
+  if (completed && classData.status === 'active') {
+    classData.status = 'ended';
+    classData.autoCompleted = true;
+  } else if (!completed && classData.autoCompleted) {
+    classData.status = 'active';
+    delete classData.autoCompleted;
+  }
+  if (writeClass || endDate !== cls.endDate || classData.status !== cls.status || classData.autoCompleted !== cls.autoCompleted) {
+    ops.push({ type: 'set', col: 'classes', id: cls.id, data: classData });
+  }
   await commit(ops);
 }
 
