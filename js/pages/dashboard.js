@@ -46,7 +46,7 @@ export function render(root, { refresh }) {
       <div class="stat"><span>Ca Trial</span><b>${sum.byType.trial.sessions}</b></div>
       <div class="stat"><span>Buổi dạy bù</span><b>${sum.byType.makeup.sessions}</b></div>
       <div class="stat"><span>Tiền công${locked ? '' : ' dự kiến'}</span><b>${money(locked ? sal.totalSalary : sum.amount)}</b>
-        <em>Đã dạy ${money(sum.doneAmount)} · Còn lại ${money(sum.plannedAmount)}</em></div>
+        <em>11.000.000đ cho tối đa 70 giờ; từ giờ 71 cộng 180.000đ/giờ</em></div>
       <div class="stat stat-accent"><span>Lương tháng (thực nhận)</span><b>${money(net)}</b>
         <em>${sal ? `${{ draft: 'Nháp', checked: 'Đã kiểm tra', locked: 'Đã chốt' }[sal.status]} · thưởng ${money(sal.bonus)} · khấu trừ ${money(sal.deduction)}` : 'Chưa lập bảng lương'}</em></div>
     </div>

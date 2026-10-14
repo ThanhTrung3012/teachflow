@@ -37,7 +37,7 @@ export function render(root) {
   root.innerHTML = `
     <div class="page-head">
       <div><h1>Lương tháng ${fmtMonth(ym)} <span class="badge ls-${status}">${locked ? '🔒 ' : ''}${STATUS[status]}</span></h1>
-        <p class="muted">Tính từng buổi: số giờ × đơn giá của chính buổi đó, chỉ cộng các buổi có tính công.</p></div>
+        <p class="muted">Lương KPI: có giờ công nhận 11.000.000đ lương cứng cho tối đa 70 giờ; từ giờ thứ 71 cộng 180.000đ/giờ.</p></div>
       <div class="btn-row">
         <select id="sel-m" aria-label="Tháng">${Array.from({ length: 12 }, (_, i) => `<option value="${String(i + 1).padStart(2, '0')}" ${Number(mm) === i + 1 ? 'selected' : ''}>Tháng ${i + 1}</option>`).join('')}</select>
         <select id="sel-y" aria-label="Năm">${years.map((y) => `<option ${y === Number(yy) ? 'selected' : ''}>${y}</option>`).join('')}</select>
@@ -60,7 +60,7 @@ export function render(root) {
     <div class="grid-2">
       <section class="card">
         <h2>Bảng lương</h2>
-        <div class="pay-row"><span>Tổng tiền công</span><b>${money(d.amount)}</b></div>
+        <div class="pay-row"><span>Lương KPI</span><b>${money(d.amount)}</b></div>
         <label class="pay-row"><span>＋ Thưởng</span><input type="number" id="bonus" min="0" step="1000" value="${bonus}" ${locked ? 'disabled' : ''}></label>
         <label class="pay-row"><span>－ Khấu trừ</span><input type="number" id="deduction" min="0" step="1000" value="${deduction}" ${locked ? 'disabled' : ''}></label>
         <div class="pay-row pay-total"><span>Thực nhận</span><b id="net">${money(netSalary(d.amount, bonus, deduction))}</b></div>
@@ -86,7 +86,7 @@ export function render(root) {
 
     <section class="card">
       <details>
-        <summary><b>Chi tiết ${d.lines.length} buổi được tính công</b> — từng dòng cộng lại thành tổng tiền</summary>
+        <summary><b>Chi tiết ${d.lines.length} buổi được tính công</b> — đơn giá từng buổi chỉ để đối chiếu, tổng lương tính theo KPI tháng</summary>
         <div class="table-wrap table-tall"><table class="tbl">
           <thead><tr><th>Ngày</th><th>Loại</th><th>Lớp</th><th>Giờ</th><th class="num">Số giờ</th><th class="num">Đơn giá</th><th class="num">Thành tiền</th></tr></thead>
           <tbody>${d.lines.map((l) => `<tr><td>${fmtDate(l.date)}</td><td>${esc(TYPE_LABEL[l.type])}</td><td>${esc(l.classCode || l.className)}</td><td>${l.startTime}–${l.endTime}</td><td class="num">${fmtHours(l.hours)}</td><td class="num">${money(l.rate)}</td><td class="num">${money(l.amount)}</td></tr>`).join('')}</tbody>

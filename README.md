@@ -62,11 +62,11 @@ Muốn hiểu / sửa nghiệp vụ, chỉ cần đọc `calc.js` và `schedule.
 
 **Giờ công.** Một buổi được tính khi và chỉ khi: không phải lịch cá nhân, không phải buổi nghỉ, `countWork = true`, và **chính bạn là người đứng lớp** (dạy bù do giáo viên khác dạy thì không tính cho bạn).
 
-**Tiền.** Mỗi buổi: `số giờ × đơn giá của buổi đó`, làm tròn đến đồng; tổng tiền = cộng các buổi được tính công. Không bao giờ lấy tổng giờ × một đơn giá chung.
+**Tiền / lương KPI.** Tổng giờ công trong tháng được cộng từ các buổi đủ điều kiện. Khi có giờ công, lương cứng là **11.000.000đ cho tối đa 70 giờ**; từ giờ thứ 71 trở đi cộng **180.000đ mỗi giờ**. Đơn giá lưu trên từng buổi chỉ dùng để đối chiếu buổi dạy.
 
 **Dạy bù.** *Lớp của tôi* (chọn lớp có sẵn) hoặc *lớp của giáo viên khác* (nhập mã lớp, GV chính; bạn là GV thực tế → tính vào công của bạn).
 
-**Lương.** Thực nhận = Tổng tiền công + Thưởng − Khấu trừ. Trạng thái Nháp → Đã kiểm tra → **Đã chốt**.
+**Lương.** Thực nhận = Lương KPI + Thưởng − Khấu trừ. Trạng thái Nháp → Đã kiểm tra → **Đã chốt**.
 Khi chốt: lưu ảnh chụp từng buổi, số liệu tháng đó được giữ cố định và **không cho sửa buổi dạy của tháng đó** cho tới khi bấm *Mở khóa*.
 
 **Buổi "Dự kiến" đã qua giờ** vẫn được tính vào tiền dự kiến; web cảnh báo và có nút *Đánh dấu tất cả đã dạy* để bạn xác nhận trước khi chốt lương.

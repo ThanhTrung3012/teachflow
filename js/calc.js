@@ -11,6 +11,13 @@ export function calcAmount(hours, rate) {
   return Math.round((Number(hours) || 0) * (Number(rate) || 0));
 }
 
+/** Lương KPI tháng: tối đa 70 giờ nhận lương cứng 11 triệu; phần vượt tính 180 nghìn/giờ. */
+export function kpiSalary(hours) {
+  const h = Math.max(0, Number(hours) || 0);
+  if (h === 0) return 0;
+  return 11_000_000 + Math.max(0, h - 70) * 180_000;
+}
+
 /** Buổi do chính mình đứng lớp? (dạy bù do GV khác dạy thì không tính vào công của mình) */
 export function isMine(s) {
   return s.actualIsMe !== false;
@@ -77,6 +84,8 @@ export function summarize(events) {
     }
   }
   for (const k of Object.keys(byType)) byType[k].hours = round2(byType[k].hours);
+  // Tiền tổng theo KPI tháng; amount theo từng buổi/loại vẫn dùng để đối chiếu đơn giá.
+  amount = kpiSalary(hours);
   return {
     sessions,
     classes: classKeys.size,
