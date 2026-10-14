@@ -5,6 +5,7 @@ import * as store from '../store.js';
 import { typeBadge, toast, confirmDialog } from '../ui.js';
 
 const STATUS = { draft: 'Nháp', checked: 'Đã kiểm tra', locked: 'Đã chốt' };
+const salaryValue = (n) => `<span class="salary-value">${money(n)}</span>`;
 
 export function render(root) {
   const ym = store.state.month;
@@ -46,7 +47,7 @@ export function render(root) {
 
     ${locked ? `<div class="alert alert-info">🔒 Tháng này đã chốt${sal.lockedAt ? ' lúc ' + new Date(sal.lockedAt).toLocaleString('vi-VN') : ''}. Số liệu bên dưới là bản đã chốt và sẽ không tự thay đổi. Muốn sửa buổi dạy hoặc lương, hãy bấm "Mở khóa".</div>` : ''}
     ${drift ? `<div class="alert alert-warn">⚠️ Dữ liệu buổi dạy hiện tại (${fmtHours(live.sum.hours)} giờ · ${money(live.sum.amount)}) khác bản đã chốt. Bản đã chốt vẫn được giữ nguyên.</div>` : ''}
-    ${stale.length ? `<div class="alert alert-warn">⏰ Có <b>${stale.length}</b> buổi đã qua giờ nhưng còn "Dự kiến" — vẫn đang được tính vào lương. Hãy xác nhận trước khi chốt. <button class="btn btn-sm" id="mark-done">Đánh dấu tất cả đã dạy</button> <a class="link" href="#/results">Xem bảng kết quả</a></div>` : ''}
+    ${stale.length ? `<div class="alert alert-warn"><b>⏰ Cần xác nhận ${stale.length} buổi đã qua giờ:</b><ul class="stale-list">${stale.map((e) => `<li><span><b>${esc(e.classCode || e.className || 'Lớp chưa đặt tên')}</b> · ${fmtDate(e.date)} · ${e.startTime}–${e.endTime}</span><button class="btn btn-sm" data-mark-session="${e.id}">✓ Đã dạy</button></li>`).join('')}</ul><button class="btn btn-sm" id="mark-done">Đánh dấu tất cả đã dạy</button> <a class="link" href="#/results">Xem bảng kết quả</a></div>` : ''}
 
     <div class="stat-grid stat-grid-sm">
       <div class="stat"><span>Tổng lớp</span><b>${d.classes}</b></div>
@@ -60,10 +61,10 @@ export function render(root) {
     <div class="grid-2">
       <section class="card">
         <h2>Bảng lương</h2>
-        <div class="pay-row"><span>Lương KPI</span><b>${money(d.amount)}</b></div>
+        <div class="pay-row"><span>Lương KPI</span><b>${salaryValue(d.amount)}</b></div>
         <label class="pay-row"><span>＋ Thưởng</span><input type="number" id="bonus" min="0" step="1000" value="${bonus}" ${locked ? 'disabled' : ''}></label>
         <label class="pay-row"><span>－ Khấu trừ</span><input type="number" id="deduction" min="0" step="1000" value="${deduction}" ${locked ? 'disabled' : ''}></label>
-        <div class="pay-row pay-total"><span>Thực nhận</span><b id="net">${money(netSalary(d.amount, bonus, deduction))}</b></div>
+        <div class="pay-row pay-total"><span>Thực nhận</span><b id="net" class="salary-value">${money(netSalary(d.amount, bonus, deduction))}</b></div>
         <p class="hint">Thực nhận = Tổng tiền công + Thưởng − Khấu trừ</p>
         <div class="btn-row wrap">
           ${locked
@@ -124,5 +125,9 @@ export function render(root) {
   });
   root.querySelector('#mark-done')?.addEventListener('click', async () => {
     try { toast(`Đã đánh dấu ${await store.markPastDone({ ym })} buổi là "Đã dạy".`); } catch (e) { toast(store.friendlyError(e), 'err'); }
+  });
+  root.querySelector('.stale-list')?.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-mark-session]'); if (!b) return;
+    try { await store.markPastDone({ sessionId: b.dataset.markSession }); toast('Đã xác nhận buổi dạy.'); } catch (ex) { toast(store.friendlyError(ex), 'err'); }
   });
 }

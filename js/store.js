@@ -325,8 +325,8 @@ export async function createPersonal({ title, date, startTime, endTime, note }) 
 }
 
 /** Đánh dấu "Đã dạy" cho các buổi đã qua giờ mà vẫn "Dự kiến". */
-export async function markPastDone({ classId = null, ym = null } = {}) {
-  const list = sessionsList().filter((s) => (!classId || s.classId === classId) && (!ym || monthOf(s.date) === ym));
+export async function markPastDone({ classId = null, ym = null, sessionId = null } = {}) {
+  const list = sessionsList().filter((s) => (!sessionId || s.id === sessionId) && (!classId || s.classId === classId) && (!ym || monthOf(s.date) === ym));
   const t = todayISO(), n = nowHM();
   const targets = list.filter((s) => isPastScheduled(s, t, n));
   assertUnlocked(targets.map((s) => s.date));

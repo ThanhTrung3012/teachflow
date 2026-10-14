@@ -57,10 +57,12 @@ function showShell() {
       <header class="topbar">
         <button class="icon-btn" id="burger" aria-label="Menu">☰</button>
         <b>TeachFlow</b>
+        <button class="icon-btn theme-toggle" aria-label="Đổi giao diện" title="Đổi giao diện">🌙</button>
       </header>
       <aside class="sidebar">
         <div class="brand"><span class="logo">📘</span><div><b>TeachFlow</b><small>Lịch dạy & lương</small></div></div>
         <nav class="menu">${MENU.map(([k, ico, label]) => `<a href="#/${k}" data-page="${k}"><span>${ico}</span>${label}</a>`).join('')}</nav>
+        <div class="side-tools"><button class="btn btn-sm theme-toggle" aria-label="Đổi giao diện">🌙 Giao diện tối</button><button class="btn btn-sm salary-toggle" aria-label="Ẩn hoặc hiện lương">🙈 Ẩn lương</button></div>
         <div class="side-user">
           <div class="avatar">${esc((store.teacherName()[0] || '?').toUpperCase())}</div>
           <div class="who"><b>${esc(store.teacherName())}</b><small>${esc(u.email)}</small></div>
@@ -71,6 +73,15 @@ function showShell() {
       <main id="view"></main>
     </div>`;
   shellReady = true;
+  const setPref = (key, cls, onText, offText) => {
+    const active = localStorage.getItem(key) === '1';
+    document.body.classList.toggle(cls, active);
+    document.querySelectorAll(key === 'teachflow-dark' ? '.theme-toggle' : '.salary-toggle').forEach((b) => { b.textContent = active ? onText : offText; });
+  };
+  setPref('teachflow-dark', 'dark-mode', '☀️ Giao diện sáng', '🌙 Giao diện tối');
+  setPref('teachflow-hide-salary', 'salary-hidden', '👁 Hiện lương', '🙈 Ẩn lương');
+  document.querySelectorAll('.theme-toggle').forEach((b) => b.onclick = () => { const on = !document.body.classList.contains('dark-mode'); localStorage.setItem('teachflow-dark', on ? '1' : '0'); setPref('teachflow-dark', 'dark-mode', '☀️ Giao diện sáng', '🌙 Giao diện tối'); });
+  document.querySelectorAll('.salary-toggle').forEach((b) => b.onclick = () => { const on = !document.body.classList.contains('salary-hidden'); localStorage.setItem('teachflow-hide-salary', on ? '1' : '0'); setPref('teachflow-hide-salary', 'salary-hidden', '👁 Hiện lương', '🙈 Ẩn lương'); });
   $('#burger').onclick = () => document.body.classList.toggle('nav-open');
   $('#scrim').onclick = () => document.body.classList.remove('nav-open');
   $('#logout').onclick = signOut;
@@ -161,6 +172,11 @@ async function boot() {
   });
   store.subscribe(renderPage);
   window.addEventListener('hashchange', renderPage);
+  // Refresh date-sensitive reminders when a lesson ends while the app remains open.
+  setInterval(() => {
+    const { page } = parseRoute();
+    if (['dashboard', 'salary'].includes(page) && !document.querySelector('.modal') && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) renderPage();
+  }, 30_000);
 }
 
 boot();

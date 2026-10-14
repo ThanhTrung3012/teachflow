@@ -35,7 +35,7 @@ export function render(root, { refresh }) {
       ${monthPickerHTML(ym)}
     </div>
 
-    ${stale.length ? `<div class="alert alert-warn">⏰ Có <b>${stale.length}</b> buổi trong tháng đã qua giờ nhưng vẫn ở trạng thái "Dự kiến". <button class="btn btn-sm" id="mark-done">Đánh dấu tất cả đã dạy</button></div>` : ''}
+    ${stale.length ? `<div class="alert alert-warn"><b>⏰ Cần xác nhận ${stale.length} buổi đã qua giờ:</b><ul class="stale-list">${stale.map((e) => `<li><span><b>${esc(e.classCode || e.className || 'Lớp chưa đặt tên')}</b> · ${fmtDate(e.date)} · ${e.startTime}–${e.endTime}</span><button class="btn btn-sm" data-mark-session="${e.id}">✓ Đã dạy</button></li>`).join('')}</ul><button class="btn btn-sm" id="mark-done">Đánh dấu tất cả đã dạy</button></div>` : ''}
     ${locked ? `<div class="alert alert-info">🔒 Lương tháng ${fmtMonth(ym)} đã được chốt.</div>` : ''}
 
     <div class="stat-grid">
@@ -45,9 +45,9 @@ export function render(root, { refresh }) {
       <div class="stat"><span>Tổng số buổi dạy</span><b>${sum.sessions}</b><em>${sum.cancelled ? `${sum.cancelled} buổi nghỉ không tính` : 'Chưa có buổi nghỉ'}</em></div>
       <div class="stat"><span>Ca Trial</span><b>${sum.byType.trial.sessions}</b></div>
       <div class="stat"><span>Buổi dạy bù</span><b>${sum.byType.makeup.sessions}</b></div>
-      <div class="stat"><span>Tiền công${locked ? '' : ' dự kiến'}</span><b>${money(locked ? sal.totalSalary : sum.amount)}</b>
+      <div class="stat"><span>Tiền công${locked ? '' : ' dự kiến'}</span><b class="salary-value">${money(locked ? sal.totalSalary : sum.amount)}</b>
         <em>11.000.000đ cho tối đa 70 giờ; từ giờ 71 cộng 180.000đ/giờ</em></div>
-      <div class="stat stat-accent"><span>Lương tháng (thực nhận)</span><b>${money(net)}</b>
+      <div class="stat stat-accent"><span>Lương tháng (thực nhận)</span><b class="salary-value">${money(net)}</b>
         <em>${sal ? `${{ draft: 'Nháp', checked: 'Đã kiểm tra', locked: 'Đã chốt' }[sal.status]} · thưởng ${money(sal.bonus)} · khấu trừ ${money(sal.deduction)}` : 'Chưa lập bảng lương'}</em></div>
     </div>
 
@@ -74,6 +74,10 @@ export function render(root, { refresh }) {
   bindMonthPicker(root, () => store.state.month, (v) => store.setMonth(v));
   root.querySelector('#mark-done')?.addEventListener('click', async () => {
     try { toast(`Đã đánh dấu ${await store.markPastDone({ ym })} buổi là "Đã dạy".`); } catch (e) { toast(store.friendlyError(e), 'err'); }
+  });
+  root.querySelector('.stale-list')?.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-mark-session]'); if (!b) return;
+    try { await store.markPastDone({ sessionId: b.dataset.markSession }); toast('Đã xác nhận buổi dạy.'); } catch (ex) { toast(store.friendlyError(ex), 'err'); }
   });
   root.querySelector('.upcoming')?.addEventListener('click', (e) => {
     const li = e.target.closest('li[data-id]');

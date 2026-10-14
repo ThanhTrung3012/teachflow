@@ -1,4 +1,4 @@
-const CACHE = 'teachflow-shell-v1';
+const CACHE = 'teachflow-shell-v2';
 const CORE = [
   './', './index.html', './manifest.webmanifest', './icons/icon.svg',
   './css/style.css', './js/app.js', './js/pwa.js', './js/calc.js', './js/config.js',
