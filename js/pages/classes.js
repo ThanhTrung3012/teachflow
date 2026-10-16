@@ -16,13 +16,27 @@ function progress(c) {
   return { total: active.length, done, cancelled: main.length - active.length };
 }
 
+function completionDate(c) {
+  const doneDates = store.classMain(c.id).filter((s) => s.status === 'done').map((s) => s.date).sort();
+  return doneDates.at(-1) || c.endDate || '';
+}
+
+function sortClasses(classes) {
+  return [...classes].sort((a, b) => {
+    const aEnded = a.status === 'ended', bEnded = b.status === 'ended';
+    if (aEnded !== bEnded) return aEnded ? 1 : -1;
+    if (aEnded) return completionDate(b).localeCompare(completionDate(a)) || a.classCode.localeCompare(b.classCode);
+    return a.classCode.localeCompare(b.classCode);
+  });
+}
+
 export function render(root, { params, refresh, navigate }) {
   if (params[0]) return renderDetail(root, params[0], { refresh, navigate });
-  const classes = store.classesList().filter((c) => {
+  const classes = sortClasses(store.classesList().filter((c) => {
     if (filters.status && c.status !== filters.status) return false;
     const q = norm(filters.q);
     return !q || [c.classCode, c.className, c.course, c.students].some((x) => norm(x).includes(q));
-  });
+  }));
 
   root.innerHTML = `
     <div class="page-head">
@@ -38,7 +52,7 @@ export function render(root, { params, refresh, navigate }) {
   root.querySelector('#add-class').onclick = () => openClassForm(null, (r) => navigate('classes/' + r.id));
   root.querySelector('#q').oninput = (e) => {
     filters.q = e.target.value;
-    root.querySelector('#class-list').innerHTML = listHTML(store.classesList().filter((c) => (!filters.status || c.status === filters.status) && (!norm(filters.q) || [c.classCode, c.className, c.course, c.students].some((x) => norm(x).includes(norm(filters.q))))));
+    root.querySelector('#class-list').innerHTML = listHTML(sortClasses(store.classesList().filter((c) => (!filters.status || c.status === filters.status) && (!norm(filters.q) || [c.classCode, c.className, c.course, c.students].some((x) => norm(x).includes(norm(filters.q)))))));
   };
   root.querySelector('#st').onchange = (e) => { filters.status = e.target.value; refresh(); };
   root.addEventListener('click', (e) => {
