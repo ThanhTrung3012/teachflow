@@ -5,13 +5,27 @@ import * as store from '../store.js';
 import { monthPickerHTML, bindMonthPicker, monthTitle, typeBadge, emptyState, toast } from '../ui.js';
 import { openEventForm } from '../forms.js';
 
+const FIXED_MONTHLY_SALARY = 11_000_000;
+const OVERTIME_RATE = 180_000;
+
+function quarterPay(ym) {
+  const [year, month] = ym.split('-').map(Number);
+  const quarterStart = Math.floor((month - 1) / 3) * 3 + 1;
+  const quarterEnd = quarterStart + 2;
+  const monthOvertime = (m) => Math.max(0, store.monthSummary(`${year}-${String(m).padStart(2, '0')}`).hours - 70) * OVERTIME_RATE;
+  const accrued = Array.from({ length: month - quarterStart + 1 }, (_, i) => monthOvertime(quarterStart + i))
+    .reduce((total, amount) => total + amount, 0);
+  return { accrued, payout: month === quarterEnd ? accrued : 0 };
+}
+
 export function render(root, { refresh }) {
   const ym = store.state.month;
   const sum = store.monthSummary(ym);
   const activeClasses = store.classesList().filter((c) => c.status === 'active').length;
   const sal = store.salaryOf(ym);
   const locked = sal?.status === 'locked';
-  const net = locked ? sal.finalSalary : netSalary(sum.amount, sal?.bonus, sal?.deduction);
+  const { accrued: quarterOvertime, payout: overtimePayout } = quarterPay(ym);
+  const net = netSalary(FIXED_MONTHLY_SALARY + overtimePayout, sal?.bonus, sal?.deduction);
   const stale = store.pastScheduled((e) => e.date.startsWith(ym));
 
   const t = todayISO(), n = nowHM();
@@ -48,7 +62,9 @@ export function render(root, { refresh }) {
       <div class="stat"><span>Tiền công${locked ? '' : ' dự kiến'}</span><b class="salary-value">${money(locked ? sal.totalSalary : sum.amount)}</b>
         <em>11.000.000đ cho tối đa 70 giờ; từ giờ 71 cộng 180.000đ/giờ</em></div>
       <div class="stat stat-accent"><span>Lương tháng (thực nhận)</span><b class="salary-value">${money(net)}</b>
-        <em>${sal ? `${{ draft: 'Nháp', checked: 'Đã kiểm tra', locked: 'Đã chốt' }[sal.status]} · thưởng ${money(sal.bonus)} · khấu trừ ${money(sal.deduction)}` : 'Chưa lập bảng lương'}</em></div>
+        <em>Lương cứng ${money(FIXED_MONTHLY_SALARY)}${overtimePayout ? ` · lương dư quý ${money(overtimePayout)}` : ''}${sal ? ` · thưởng ${money(sal.bonus)} · khấu trừ ${money(sal.deduction)}` : ''}</em></div>
+      <div class="stat"><span>Lương dư (tích lũy quý)</span><b class="salary-value">${money(quarterOvertime)}</b>
+        <em>${overtimePayout ? 'Đã cộng dồn và chi trả trong tháng cuối quý' : 'Phần vượt 70 giờ/tháng · 180.000đ/giờ'}</em></div>
     </div>
 
     <div class="grid-2">
