@@ -7,15 +7,17 @@ import * as classes from './pages/classes.js';
 import * as calendar from './pages/calendar.js';
 import * as results from './pages/results.js';
 import * as salary from './pages/salary.js';
+import * as income from './pages/income.js';
 import * as settings from './pages/settings.js';
 
-const PAGES = { dashboard, classes, calendar, results, salary, settings };
+const PAGES = { dashboard, classes, calendar, results, salary, income, settings };
 const MENU = [
   ['dashboard', '🏠', 'Dashboard'],
   ['classes', '📚', 'Lớp học'],
   ['calendar', '📅', 'Lịch'],
   ['results', '📋', 'Bảng kết quả'],
   ['salary', '💰', 'Lương'],
+  ['income', '📈', 'Thu nhập năm'],
   ['settings', '⚙️', 'Cài đặt'],
 ];
 

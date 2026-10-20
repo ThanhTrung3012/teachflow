@@ -376,6 +376,21 @@ export async function unlockSalary(ym) {
   await commit([{ type: 'set', col: 'salary_months', id: salaryDocId(ym), data: { ...old, status: 'checked', lines: null, lockedAt: null } }]);
 }
 
+/** Lưu các khoản thu nhập tự khai báo cho 12 tháng, giữ nguyên dữ liệu lương KPI hiện có. */
+export async function saveIncomeYear(year, months) {
+  if (!Array.isArray(months) || months.length !== 12) throw new Error('Dữ liệu cần có đủ 12 tháng.');
+  const ops = months.map((values, index) => {
+    const ym = `${year}-${String(index + 1).padStart(2, '0')}`;
+    const old = salaryOf(ym) || {};
+    const clean = {};
+    for (const field of ['trackedSalary', 'trackedBonus', 'preTaxIncome']) {
+      clean[field] = Math.max(0, Math.round(Number(values[field]) || 0));
+    }
+    return { type: 'set', col: 'salary_months', id: salaryDocId(ym), data: { ...old, ...clean, month: index + 1, year: Number(year) } };
+  });
+  await commit(ops);
+}
+
 // ---------- Sao lưu ----------
 export function exportAll() {
   return {

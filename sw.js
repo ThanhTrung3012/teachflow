@@ -1,10 +1,10 @@
-const CACHE = 'teachflow-shell-v2';
+const CACHE = 'teachflow-shell-v3';
 const CORE = [
   './', './index.html', './manifest.webmanifest', './icons/icon.svg',
   './css/style.css', './js/app.js', './js/pwa.js', './js/calc.js', './js/config.js',
   './js/forms.js', './js/schedule.js', './js/store.js', './js/ui.js', './js/util.js',
   './js/pages/calendar.js', './js/pages/classes.js', './js/pages/dashboard.js',
-  './js/pages/results.js', './js/pages/salary.js', './js/pages/settings.js',
+  './js/pages/results.js', './js/pages/salary.js', './js/pages/income.js', './js/pages/settings.js',
   './js/adapters/firebase.js', './js/adapters/local.js'
 ];
 
